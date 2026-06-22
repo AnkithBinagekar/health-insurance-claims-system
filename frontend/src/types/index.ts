@@ -1,17 +1,16 @@
-export enum DecisionType {
-  APPROVED = "APPROVED",
-  PARTIAL = "PARTIAL",
-  REJECTED = "REJECTED",
-  MANUAL_REVIEW = "MANUAL_REVIEW",
-}
+export type DecisionType = "APPROVED" | "PARTIAL" | "REJECTED" | "MANUAL_REVIEW";
+export type AgentStatus = "PENDING" | "SUCCESS" | "FAILED" | "SKIPPED" | "DEGRADED";
 
-export enum AgentStatus {
-  PENDING = "PENDING",
-  SUCCESS = "SUCCESS",
-  FAILED = "FAILED",
-  SKIPPED = "SKIPPED",
-  DEGRADED = "DEGRADED",
-}
+export const CLAIM_CATEGORIES = [
+  "CONSULTATION", 
+  "DIAGNOSTIC", 
+  "PHARMACY", 
+  "DENTAL", 
+  "VISION", 
+  "ALTERNATIVE_MEDICINE"
+] as const;
+
+export type ClaimCategory = typeof CLAIM_CATEGORIES[number];
 
 export interface LineItem {
   description: string;

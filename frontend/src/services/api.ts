@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ClaimContextPayload } from '../types';
+import type { ClaimContextPayload } from '../types';
 
 const API_BASE_URL = 'http://localhost:8000/api/claims';
 

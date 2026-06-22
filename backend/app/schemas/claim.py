@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 from backend.app.schemas.enums import DecisionType, ClaimCategory, DocumentType
 from backend.app.schemas.trace import SystemTrace
@@ -33,7 +33,7 @@ class HydratedContext(BaseModel):
     policy: PolicyTerms
     member: MemberProfile
     ytd_claims_amount: float = 0.0
-
+    claims_history: List[Dict[str, Any]] = Field(default_factory=list)
 class ExecutionState(BaseModel):
     """Finite state machine variables mutated by agents."""
     is_halted: bool = False

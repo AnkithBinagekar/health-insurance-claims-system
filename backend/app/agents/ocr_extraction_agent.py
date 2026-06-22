@@ -30,18 +30,26 @@ class OcrOutputSchema(BaseModel):
 class OCRExtractionAgent(BaseAgent):
     
     async def _process(self, context: ClaimContext, trace: AgentTrace) -> ClaimContext:
-        # Use Pro model for deep OCR extraction as per assignment hint
         model = settings.pro_model 
         
         for doc in context.input.documents:
+            # Add this safe fallback
+            doc_type_str = doc.detected_type.value if doc.detected_type else "medical document"
+            
             prompt = f"""
-            Extract all available structured data from this {doc.detected_type.value}.
+            Extract all available structured data from this {doc_type_str}.
             If a field is not present, omit it or return null.
             Pay strict attention to numbers, line item amounts, and totals.
-            Ensure doctor registration numbers match standard Indian formats (e.g., KA/12345/2015).
+            Ensure doctor registration numbers match standard Indian formats.
+            
+            CRITICAL INSTRUCTION FOR LINE ITEMS:
+            For every line item extracted, you must provide its exact 2D bounding box 
+            coordinates from the image. Return the coordinates as a list of 4 integers 
+            in the format [ymin, xmin, ymax, xmax] scaled to 1000.
             """
             
             doc_part = get_document_part(doc.storage_url)
+            # ... rest of the file remains the same
             
             response = ai_client.models.generate_content(
                 model=model,

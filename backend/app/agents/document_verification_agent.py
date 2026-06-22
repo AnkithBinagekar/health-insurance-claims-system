@@ -63,7 +63,7 @@ class DocumentVerificationAgent(BaseAgent):
             context.state.halt_reason = "MISSING_REQUIRED_DOCUMENT"
             
             # Actionable message generation (TC001 Requirement)
-            uploaded_str = ", ".join([d.value for d in uploaded_types]) or "None"
+            uploaded_str = ", ".join(uploaded_types) or "None"
             missing_str = ", ".join(missing_docs)
             context.state.halt_message = (
                 f"You uploaded: {uploaded_str}. "

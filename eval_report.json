@@ -1,0 +1,463 @@
+{
+  "timestamp": "2026-06-22T15:09:32.898466",
+  "results": [
+    {
+      "case_id": "TC001",
+      "case_name": "Wrong Document Uploaded",
+      "passed": false,
+      "expected_decision": null,
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC002",
+      "case_name": "Unreadable Document",
+      "passed": true,
+      "expected_decision": null,
+      "actual_decision": null,
+      "halt_reason": "UNREADABLE_DOCUMENT",
+      "approved_amount": 0.0,
+      "system_notes": [],
+      "trace_summary": [
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SKIPPED",
+          "impact": null
+        }
+      ]
+    },
+    {
+      "case_id": "TC003",
+      "case_name": "Documents Belong to Different Patients",
+      "passed": false,
+      "expected_decision": null,
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC004",
+      "case_name": "Clean Consultation \u00e2\u20ac\u201d Full Approval",
+      "passed": false,
+      "expected_decision": "APPROVED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC005",
+      "case_name": "Waiting Period \u00e2\u20ac\u201d Diabetes",
+      "passed": false,
+      "expected_decision": "REJECTED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC006",
+      "case_name": "Dental Partial Approval \u00e2\u20ac\u201d Cosmetic Exclusion",
+      "passed": false,
+      "expected_decision": "PARTIAL",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC007",
+      "case_name": "MRI Without Pre-Authorization",
+      "passed": false,
+      "expected_decision": "REJECTED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC008",
+      "case_name": "Per-Claim Limit Exceeded",
+      "passed": false,
+      "expected_decision": "REJECTED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC009",
+      "case_name": "Fraud Signal \u00e2\u20ac\u201d Multiple Same-Day Claims",
+      "passed": true,
+      "expected_decision": "MANUAL_REVIEW",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "Fraud Signal: 3 prior claims detected for 2024-10-30.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": "Flagged for MANUAL_REVIEW due to velocity limits."
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Fraud flags detected."
+        }
+      ]
+    },
+    {
+      "case_id": "TC010",
+      "case_name": "Network Hospital \u00e2\u20ac\u201d Discount Applied",
+      "passed": false,
+      "expected_decision": "APPROVED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC011",
+      "case_name": "Component Failure \u00e2\u20ac\u201d Graceful Degradation",
+      "passed": false,
+      "expected_decision": "APPROVED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    },
+    {
+      "case_id": "TC012",
+      "case_name": "Excluded Treatment",
+      "passed": false,
+      "expected_decision": "REJECTED",
+      "actual_decision": "MANUAL_REVIEW",
+      "halt_reason": null,
+      "approved_amount": 0.0,
+      "system_notes": [
+        "System degraded: DocumentVerificationAgent encountered an error.",
+        "System degraded: PolicyEvaluationAgent encountered an error."
+      ],
+      "trace_summary": [
+        {
+          "agent": "DocumentVerificationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "CrossValidationAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "FraudDetectionAgent",
+          "status": "SUCCESS",
+          "impact": null
+        },
+        {
+          "agent": "PolicyEvaluationAgent",
+          "status": "FAILED",
+          "impact": "Agent failed. Confidence reduced by 15.0%."
+        },
+        {
+          "agent": "DecisionAgent",
+          "status": "SUCCESS",
+          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+        }
+      ]
+    }
+  ]
+}

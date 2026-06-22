@@ -10,10 +10,10 @@ class Settings(BaseSettings):
     environment: str = "development" # development, staging, production
     log_level: str = "INFO"
     
-    # AI Config (To be used in later phases)
+    # AI Config
     gemini_api_key: Optional[str] = None
-    flash_model: str = "gemini-1.5-flash"
-    pro_model: str = "gemini-1.5-pro"
+    flash_model: str = "gemini-2.5-flash"  # Updated for Classification/Verification
+    pro_model: str = "gemini-2.5-pro"      # Updated for heavy OCR Extraction
     
     # System Config
     confidence_penalty_per_failure: float = 0.15

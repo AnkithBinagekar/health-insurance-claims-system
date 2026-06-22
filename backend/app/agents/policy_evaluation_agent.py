@@ -13,6 +13,12 @@ class PolicyEvaluationAgent(BaseAgent):
         category_key = context.input.claim_category.value.lower()
         cat_rules = policy.get("opd_categories", {}).get(category_key, {})
         
+# Step 0: Check Base Coverage (TC001/Uncovered Category)
+        if context.input.claim_category.value not in context.hydrated.policy.coverage_categories:
+            context.result.rejection_reasons.append(f"{context.input.claim_category.value}_NOT_COVERED")
+            context.result.notes.append(f"Claim category {context.input.claim_category.value} is not covered under this policy.")
+            return context # Fast fail
+
         # Step 1: Check Exclusions (TC012)
         exclusions = policy.get("exclusions", {}).get("conditions", [])
         extracted_diagnoses = self._aggregate_diagnoses(context)
@@ -66,7 +72,9 @@ class PolicyEvaluationAgent(BaseAgent):
             context.result.notes.append(f"Network discount ({discount_pct}%) applied: -₹{discount_amt}")
 
         # 3. Co-pay Application
-        copay_pct = cat_rules.get("copay_percent", 0)
+        # Fallback to the root policy copay_percentage if a category-specific one isn't found
+        copay_pct = cat_rules.get("copay_percent", getattr(context.hydrated.policy, "copay_percentage", 0))
+        
         if copay_pct > 0:
             copay_amt = total_approved * (copay_pct / 100)
             total_approved -= copay_amt

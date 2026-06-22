@@ -2,6 +2,20 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import date
 
+from typing import List, Optional
+from pydantic import BaseModel, Field
+
+class LineItem(BaseModel):
+    description: str
+    amount: float
+    is_covered: bool = True
+    rejection_reason: Optional[str] = None
+    # Add this new field for the spatial coordinates!
+    bounding_box: Optional[List[int]] = Field(
+        default=None, 
+        description="[ymin, xmin, ymax, xmax] coordinates normalized to 1000"
+    )
+
 class MemberProfile(BaseModel):
     member_id: str
     name: str

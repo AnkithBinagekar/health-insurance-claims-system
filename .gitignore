@@ -1,8 +1,10 @@
-echo venv/ > .gitignore
-echo .env >> .gitignore
-echo __pycache__/ >> .gitignore
-echo .pytest_cache/ >> .gitignore
-echo .mypy_cache/ >> .gitignore
+# Python
+venv/
+.env
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+*.pyc
 
 # Logs
 logs
@@ -13,15 +15,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node
+node_modules/
+dist/
+dist-ssr/
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*

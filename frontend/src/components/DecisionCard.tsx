@@ -52,10 +52,17 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
   const theme = themeMap[status] || themeMap.MANUAL_REVIEW;
   const Icon = theme.icon;
 
-  // Calculate final confidence safely
-  const finalConfidence = (trace?.confidence_ledger?.length ?? 0) > 0 
-    ? trace.confidence_ledger![trace.confidence_ledger!.length - 1].new_confidence * 100 
-    : (trace?.base_confidence || 1) * 100;
+  // Calculate final confidence safely without rendering NaN
+  const getSafeConfidence = () => {
+    if (!trace) return 0;
+    let conf = trace.base_confidence ?? 0;
+    if (trace.confidence_ledger && trace.confidence_ledger.length > 0) {
+      conf = trace.confidence_ledger[trace.confidence_ledger.length - 1].new_confidence ?? conf;
+    }
+    const finalVal = Number(conf) * 100;
+    return isNaN(finalVal) ? 0 : finalVal;
+  };
+  const finalConfidence = getSafeConfidence();
 
   return (
     // Consistent Styling: Matching the form's rounded-xl and soft shadow

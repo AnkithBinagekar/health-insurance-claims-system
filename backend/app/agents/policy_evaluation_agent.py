@@ -94,7 +94,7 @@ class PolicyEvaluationAgent(BaseAgent):
     def _aggregate_diagnoses(self, context: ClaimContext) -> list[str]:
         diagnoses = []
         for doc in context.input.documents:
-            if doc.extracted_data and doc.extracted_data.diagnosis:
+            if doc.extracted_data and getattr(doc.extracted_data, 'diagnosis', None):
                 diagnoses.append(doc.extracted_data.diagnosis)
         return diagnoses
 
@@ -112,7 +112,7 @@ class PolicyEvaluationAgent(BaseAgent):
     def _is_network_hospital(self, context: ClaimContext, policy: dict) -> bool:
         network_list = policy.get("network_hospitals", [])
         for doc in context.input.documents:
-            if doc.extracted_data and doc.extracted_data.hospital_name:
+            if doc.extracted_data and getattr(doc.extracted_data, 'hospital_name', None):
                 h_name = doc.extracted_data.hospital_name.lower()
                 if any(nw.lower() in h_name for nw in network_list):
                     return True

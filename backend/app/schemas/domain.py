@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Any, Optional, List
 from datetime import date
 
 from typing import List, Optional
@@ -42,5 +42,12 @@ class ExtractedDocumentData(BaseModel):
     doctor_name: Optional[str] = None
     date: Optional[str] = None
     
+    # Explicitly defined optional fields for deterministic math
+    diagnosis: Optional[str] = None
+    hospital_name: Optional[str] = None
+    procedure_name: Optional[str] = None
+    pre_auth_id: Optional[str] = None
+    line_items: Optional[List[Any]] = None
+
     class Config:
-        extra = "allow" # Allows specific agents to append diagnosis, medicines, etc.
+         extra = "allow" # Allows specific agents to append extra metadata

@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from backend.app.api.routes import router as claims_router
 from backend.app.core.config import settings
+import os
 
 app = FastAPI(
     title=settings.app_name,
@@ -9,14 +11,24 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow React frontend (running on Vite's default port 5173) to communicate
+# 1. FIX CORS: No wildcards allowed when credentials=True
+origins = [
+    "http://localhost:5173",     # Vite local dev
+    "http://localhost:3000",     # Alternate local dev
+    "https://.vercel.app" # <-- UPDATE THIS with your actual Vercel URL
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # The magic wildcard!
+    allow_origins=origins, 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 2. FIX IMAGES: Serve the uploaded files so Vercel can fetch them
+os.makedirs("temp_uploads", exist_ok=True)
+app.mount("/temp_uploads", StaticFiles(directory="temp_uploads"), name="temp_uploads")
 
 app.include_router(claims_router)
 

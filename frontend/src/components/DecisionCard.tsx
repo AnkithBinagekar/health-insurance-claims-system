@@ -1,17 +1,36 @@
 import React from 'react';
 import { CheckCircle2, AlertCircle, XCircle, ShieldAlert, IndianRupee } from 'lucide-react';
 
-// Define your props based on your existing types
+// 1. Define types inline to resolve the TS(2305) export error without touching types.ts
+export interface DecisionResult {
+  decision?: { value: string } | string | null;
+  approved_amount?: number;
+  rejection_reasons?: string[];
+  notes?: string[];
+}
+
+export interface SystemTrace {
+  claim_id?: string;
+  base_confidence?: number;
+  confidence_ledger?: Array<{ new_confidence: number }>;
+}
+
 interface DecisionCardProps {
-  result: any;
-  trace: any;
+  result: DecisionResult;
+  trace: SystemTrace;
   haltedMsg?: string;
 }
 
 export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, haltedMsg }) => {
   // Determine the primary status and color scheme dynamically
   const isHalted = !!haltedMsg;
-  const status = isHalted ? 'HALTED' : (result?.decision?.value || 'MANUAL_REVIEW');
+  
+  // Safely extract the string value from the decision enum/object
+  const decisionValue = typeof result?.decision === 'object' && result?.decision !== null 
+    ? result.decision.value 
+    : result?.decision;
+    
+  const status = isHalted ? 'HALTED' : (decisionValue || 'MANUAL_REVIEW');
   
   // 1. Familiar Patterns: Traffic-light color mapping
   type ThemeConfig = {
@@ -31,15 +50,15 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
   };
 
   const theme = themeMap[status] || themeMap.MANUAL_REVIEW;
-
   const Icon = theme.icon;
+
   // Calculate final confidence safely
-  const finalConfidence = trace?.confidence_ledger?.length > 0 
-    ? trace.confidence_ledger[trace.confidence_ledger.length - 1].new_confidence * 100 
+  const finalConfidence = (trace?.confidence_ledger?.length ?? 0) > 0 
+    ? trace.confidence_ledger![trace.confidence_ledger!.length - 1].new_confidence * 100 
     : (trace?.base_confidence || 1) * 100;
 
   return (
-    // 4. Consistent Styling: Matching the form's rounded-xl and soft shadow
+    // Consistent Styling: Matching the form's rounded-xl and soft shadow
     <div className={`rounded-2xl border shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md bg-white ${theme.border}`}>
       
       {/* Header section with dynamic color */}
@@ -49,12 +68,12 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
           <div>
             <h2 className={`text-xl font-bold ${theme.text}`}>{theme.title}</h2>
             <p className="text-sm font-medium text-gray-600 mt-0.5">
-              ID: <span className="font-mono text-gray-800">{trace?.claim_id}</span>
+              ID: <span className="font-mono text-gray-800">{trace?.claim_id || 'PENDING'}</span>
             </p>
           </div>
         </div>
         
-        {/* 1. Clear Visual Hierarchy: The most important number is huge */}
+        {/* Clear Visual Hierarchy: The most important number is huge */}
         {!isHalted && (
           <div className="text-right">
             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Approved Amount</p>
@@ -68,14 +87,14 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
 
       <div className="p-6 space-y-6">
         
-        {/* 5. Instant Feedback: Halted message stands out immediately if the pipeline stopped */}
+        {/* Instant Feedback: Halted message stands out immediately if the pipeline stopped */}
         {isHalted ? (
           <div className="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg">
             <p className="text-rose-800 font-medium">{haltedMsg}</p>
           </div>
         ) : (
           <>
-            {/* 3. Simplicity & Focus: AI Confidence represented visually, not just as text */}
+            {/* Simplicity & Focus: AI Confidence represented visually */}
             <div>
               <div className="flex justify-between items-end mb-2">
                 <span className="text-sm font-semibold text-gray-700">AI Confidence Score</span>
@@ -92,17 +111,17 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
             </div>
 
             {/* Structured Reasons & Notes */}
-            {((result?.rejection_reasons?.length > 0) || (result?.notes?.length > 0)) && (
+            {(((result?.rejection_reasons?.length ?? 0) > 0) || ((result?.notes?.length ?? 0) > 0)) && (
               <div className="grid gap-4 mt-6 border-t pt-6">
                 
-                {result?.rejection_reasons?.length > 0 && (
+                {(result?.rejection_reasons?.length ?? 0) > 0 && (
                   <div>
                     <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-2">
                       <ShieldAlert className="w-4 h-4 text-rose-500" />
                       Flags & Rejections
                     </h3>
                     <ul className="space-y-2">
-                      {result.rejection_reasons.map((reason: string, idx: number) => (
+                      {result.rejection_reasons!.map((reason: string, idx: number) => (
                         <li key={idx} className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-md border border-gray-100">
                           {reason}
                         </li>
@@ -111,13 +130,13 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
                   </div>
                 )}
 
-                {result?.notes?.length > 0 && (
+                {(result?.notes?.length ?? 0) > 0 && (
                   <div>
                     <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-2 text-gray-500">
                       Deterministic Notes
                     </h3>
                     <ul className="space-y-1">
-                      {result.notes.map((note: string, idx: number) => (
+                      {result.notes!.map((note: string, idx: number) => (
                         <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
                           <span className="text-indigo-400 mt-0.5">•</span>
                           {note}

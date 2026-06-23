@@ -55,12 +55,21 @@ export interface ClaimResult {
   notes: string[];
 }
 
-export interface ClaimContextPayload {
-  trace: SystemTrace;
-  result: ClaimResult;
-  state: {
-    is_halted: boolean;
-    halt_reason?: string;
-    halt_message?: string;
-  };
+// 1. Add these two helper interfaces if you don't have them already
+export interface DocumentPayload {
+  storage_url: string;
+  extracted_data?: any; 
 }
+
+export interface ClaimInputPayload {
+  documents?: DocumentPayload[];
+}
+
+// 2. Add the 'input' property to your main payload interface
+export interface ClaimContextPayload {
+  input: ClaimInputPayload;   // <-- Add this line!
+  trace: any;                 // (Keep your existing types for these)
+  result: any;                
+  state: any;                 
+}
+

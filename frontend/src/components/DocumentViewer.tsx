@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// 1. Define the exact shape of the data coming from your Python backend
 interface LineItem {
   description: string;
   amount: number;
@@ -19,11 +18,17 @@ interface DocumentViewerProps {
 }
 
 export default function DocumentViewer({ documentUrl, extractedData }: DocumentViewerProps) {
-  // Track the hovered row index
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
-  // Safely default to an empty array if data isn't loaded yet
   const lineItems = extractedData?.line_items || [];
+
+  // FIX: Safely route local backend paths to the actual Azure/Backend URL
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const getFullImageUrl = (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return `${API_BASE_URL}${cleanPath}`;
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-6 w-full mt-6">
@@ -31,7 +36,7 @@ export default function DocumentViewer({ documentUrl, extractedData }: DocumentV
       {/* LEFT PANEL: The Image & Bounding Boxes */}
       <div className="relative w-full md:w-1/2 border rounded-lg overflow-hidden bg-gray-50">
         <img 
-          src={documentUrl} 
+          src={getFullImageUrl(documentUrl)} 
           alt="Medical Document" 
           className="w-full h-auto block" 
         />
@@ -40,8 +45,6 @@ export default function DocumentViewer({ documentUrl, extractedData }: DocumentV
           if (!item.bounding_box) return null;
           
           const [ymin, xmin, ymax, xmax] = item.bounding_box;
-          
-          // Convert 0-1000 scale to CSS Percentages
           const top = `${(ymin / 1000) * 100}%`;
           const left = `${(xmin / 1000) * 100}%`;
           const height = `${((ymax - ymin) / 1000) * 100}%`;
@@ -51,7 +54,7 @@ export default function DocumentViewer({ documentUrl, extractedData }: DocumentV
 
           return (
             <div
-              key={index}
+              key={`bbox-${index}-${item.description}`} // FIX: Safer React Key
               style={{ top, left, height, width }}
               className={`absolute transition-all duration-200 pointer-events-none
                 ${isHovered 
@@ -82,7 +85,7 @@ export default function DocumentViewer({ documentUrl, extractedData }: DocumentV
             <tbody className="divide-y">
               {lineItems.map((item, index) => (
                 <tr 
-                  key={index}
+                  key={`row-${index}-${item.description}`} // FIX: Safer React Key
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={`cursor-pointer transition-colors

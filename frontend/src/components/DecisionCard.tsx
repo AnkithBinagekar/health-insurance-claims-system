@@ -84,10 +84,16 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
         {!isHalted && (
           <div className="text-right">
             <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Approved Amount</p>
-            <div className={`flex items-center justify-end font-bold text-3xl ${status === 'REJECTED' ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-              <IndianRupee className="w-6 h-6 mr-1" />
-              {result?.approved_amount?.toFixed(2) || '0.00'}
-            </div>
+            {status === 'REJECTED' ? (
+              <div className="flex items-center justify-end font-bold text-xl text-gray-400 mt-1">
+                No payout approved
+              </div>
+            ) : (
+              <div className="flex items-center justify-end font-bold text-3xl text-gray-900 mt-1">
+                <IndianRupee className="w-6 h-6 mr-1" />
+                {result?.approved_amount?.toFixed(2) || '0.00'}
+              </div>
+            )}
           </div>
         )}
       </div>

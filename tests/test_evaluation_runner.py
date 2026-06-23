@@ -17,7 +17,7 @@ from backend.app.agents.policy_evaluation_agent import PolicyEvaluationAgent
 from backend.app.agents.decision_agent import DecisionAgent
 
 async def run_evaluation():
-    print("🚀 Starting Automated Evaluation Runner...")
+    print(" Starting Automated Evaluation Runner...")
     
     # 1. Load Data
     with open("policy_terms.json", "r") as f:

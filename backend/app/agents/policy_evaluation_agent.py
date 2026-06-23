@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from backend.app.core.base_agent import BaseAgent
 from backend.app.schemas.claim import ClaimContext, LineItem
 from backend.app.schemas.trace import AgentTrace
@@ -38,7 +38,7 @@ class PolicyEvaluationAgent(BaseAgent):
         for condition, days_required in wp_rules.items():
             if days_active < days_required and any(self._fuzzy_match(condition, d) for d in extracted_diagnoses):
                 context.result.rejection_reasons.append("WAITING_PERIOD")
-                eligibility_date = join_date.replace(day=join_date.day + days_required) # Simplified date math for example
+                eligibility_date = eligibility_date = join_date + timedelta(days=days_required) # Simplified date math for example
                 context.result.notes.append(f"Subject to waiting period for {condition}. Eligible on {eligibility_date}.")
                 return context
 

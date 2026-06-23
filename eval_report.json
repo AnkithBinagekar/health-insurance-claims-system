@@ -1,43 +1,20 @@
 {
-  "timestamp": "2026-06-22T15:09:32.898466",
+  "timestamp": "2026-06-23T19:17:46.046637",
   "results": [
     {
       "case_id": "TC001",
       "case_name": "Wrong Document Uploaded",
-      "passed": false,
+      "passed": true,
       "expected_decision": null,
-      "actual_decision": "MANUAL_REVIEW",
-      "halt_reason": null,
+      "actual_decision": null,
+      "halt_reason": "MISSING_REQUIRED_DOCUMENT",
       "approved_amount": 0.0,
-      "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
-      ],
+      "system_notes": [],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
           "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
-        },
-        {
-          "agent": "CrossValidationAgent",
-          "status": "SUCCESS",
           "impact": null
-        },
-        {
-          "agent": "FraudDetectionAgent",
-          "status": "SUCCESS",
-          "impact": null
-        },
-        {
-          "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
-        },
-        {
-          "agent": "DecisionAgent",
-          "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
         }
       ]
     },
@@ -61,60 +38,47 @@
     {
       "case_id": "TC003",
       "case_name": "Documents Belong to Different Patients",
-      "passed": false,
+      "passed": true,
       "expected_decision": null,
-      "actual_decision": "MANUAL_REVIEW",
-      "halt_reason": null,
+      "actual_decision": null,
+      "halt_reason": "IDENTITY_MISMATCH",
       "approved_amount": 0.0,
-      "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
-      ],
+      "system_notes": [],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
-          "status": "SUCCESS",
-          "impact": null
-        },
-        {
-          "agent": "FraudDetectionAgent",
-          "status": "SUCCESS",
-          "impact": null
-        },
-        {
-          "agent": "PolicyEvaluationAgent",
           "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
-        },
-        {
-          "agent": "DecisionAgent",
-          "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Pipeline halted due to critical identity mismatch."
         }
       ]
     },
     {
       "case_id": "TC004",
       "case_name": "Clean Consultation \u00e2\u20ac\u201d Full Approval",
-      "passed": false,
+      "passed": true,
       "expected_decision": "APPROVED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "APPROVED",
       "halt_reason": null,
-      "approved_amount": 0.0,
+      "approved_amount": 1350.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Co-pay (10%) applied: -\u20b9150.0",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 214 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Hospital 'City Clinic, Bengaluru' is out-of-network. No base discount applied.",
+        "\u2705 [Exclusions Application] No excluded line items found.",
+        "\u2705 [Policy Limits Check] Amount is well within all sub-limits and annual caps.",
+        "\u2705 [Co-Pay Deduction] Deducted 10.0% co-pay (\u20b9150.0)."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -128,33 +92,33 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: APPROVED (\u20b91350.0)"
         }
       ]
     },
     {
       "case_id": "TC005",
       "case_name": "Waiting Period \u00e2\u20ac\u201d Diabetes",
-      "passed": false,
+      "passed": true,
       "expected_decision": "REJECTED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "REJECTED",
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Subject to waiting period for diabetes. Eligible on 2024-11-30.",
+        "\u274c [Waiting Period Check] Member active for 44 days. Condition 'diabetes' requires 90 days."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -168,33 +132,38 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: REJECTED (\u20b90.0)"
         }
       ]
     },
     {
       "case_id": "TC006",
       "case_name": "Dental Partial Approval \u00e2\u20ac\u201d Cosmetic Exclusion",
-      "passed": false,
+      "passed": true,
       "expected_decision": "PARTIAL",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "PARTIAL",
       "halt_reason": null,
-      "approved_amount": 0.0,
+      "approved_amount": 8000.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Claimed amount (\u20b912000.0) exceeds per claim limit of \u20b95000.",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 197 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Hospital 'Smile Dental Clinic' is out-of-network. No base discount applied.",
+        "\u274c [Exclusions Application] Excluded \u20b94000.0 for non-payable items: Teeth Whitening.",
+        "\u2705 [Policy Limits Check] Amount is well within all sub-limits and annual caps.",
+        "\u2705 [Co-Pay Deduction] No co-pay required for this category."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -208,33 +177,33 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: PARTIAL (\u20b98000.0)"
         }
       ]
     },
     {
       "case_id": "TC007",
       "case_name": "MRI Without Pre-Authorization",
-      "passed": false,
+      "passed": true,
       "expected_decision": "REJECTED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "REJECTED",
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Subject to waiting period for hernia. Eligible on 2025-04-01.",
+        "\u274c [Waiting Period Check] Member active for 215 days. Condition 'hernia' requires 365 days."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -248,33 +217,38 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: REJECTED (\u20b90.0)"
         }
       ]
     },
     {
       "case_id": "TC008",
       "case_name": "Per-Claim Limit Exceeded",
-      "passed": false,
+      "passed": true,
       "expected_decision": "REJECTED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "REJECTED",
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Co-pay (10%) applied: -\u20b9200.0",
+        "Claimed amount (\u20b97500.0) exceeds per claim limit of \u20b95000.",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 202 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Hospital 'Unknown Hospital' is out-of-network. No base discount applied.",
+        "\u2705 [Exclusions Application] No excluded line items found.",
+        "\u274c [Per Claim Limit Check] Requested amount \u20b97500.0 breaches effective per-claim limit."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -288,13 +262,13 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: REJECTED (\u20b90.0)"
         }
       ]
     },
@@ -307,15 +281,14 @@
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
         "Fraud Signal: 3 prior claims detected for 2024-10-30.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Co-pay (10%) applied: -\u20b90.0"
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -329,8 +302,8 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
@@ -342,20 +315,26 @@
     {
       "case_id": "TC010",
       "case_name": "Network Hospital \u00e2\u20ac\u201d Discount Applied",
-      "passed": false,
+      "passed": true,
       "expected_decision": "APPROVED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "APPROVED",
       "halt_reason": null,
-      "approved_amount": 0.0,
+      "approved_amount": 3240.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Network discount (20%) applied: -\u20b9400.0",
+        "Co-pay (10%) applied: -\u20b9160.0",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 216 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Applied 20.0% discount for network hospital: Apollo Hospitals.",
+        "\u2705 [Exclusions Application] No excluded line items found.",
+        "\u2705 [Policy Limits Check] Amount is well within all sub-limits and annual caps.",
+        "\u2705 [Co-Pay Deduction] Deducted 10.0% co-pay (\u20b9360.0)."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -369,33 +348,38 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: APPROVED (\u20b93240.0)"
         }
       ]
     },
     {
       "case_id": "TC011",
       "case_name": "Component Failure \u00e2\u20ac\u201d Graceful Degradation",
-      "passed": false,
+      "passed": true,
       "expected_decision": "APPROVED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "APPROVED",
       "halt_reason": null,
-      "approved_amount": 0.0,
+      "approved_amount": 4000.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "System degraded: PolicyEvaluationAgent encountered an error.",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 210 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Hospital 'Ayur Wellness Centre' is out-of-network. No base discount applied.",
+        "\u2705 [Exclusions Application] No excluded line items found.",
+        "\u2705 [Policy Limits Check] Amount is well within all sub-limits and annual caps.",
+        "\u2705 [Co-Pay Deduction] No co-pay required for this category."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -415,27 +399,32 @@
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: APPROVED (\u20b94000.0)"
         }
       ]
     },
     {
       "case_id": "TC012",
       "case_name": "Excluded Treatment",
-      "passed": false,
+      "passed": true,
       "expected_decision": "REJECTED",
-      "actual_decision": "MANUAL_REVIEW",
+      "actual_decision": "REJECTED",
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "System degraded: DocumentVerificationAgent encountered an error.",
-        "System degraded: PolicyEvaluationAgent encountered an error."
+        "Co-pay (10%) applied: -\u20b9200.0",
+        "Claimed amount (\u20b98000.0) exceeds per claim limit of \u20b95000.",
+        "\u2705 [Waiting Period Check] Cleared. Member active for 200 days (Requires 30 for standard initial enrollment).",
+        "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
+        "\u2705 [Network Discount] Hospital 'Unknown Hospital' is out-of-network. No base discount applied.",
+        "\u2705 [Exclusions Application] No excluded line items found.",
+        "\u274c [Per Claim Limit Check] Requested amount \u20b98000.0 breaches effective per-claim limit."
       ],
       "trace_summary": [
         {
           "agent": "DocumentVerificationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "CrossValidationAgent",
@@ -449,13 +438,13 @@
         },
         {
           "agent": "PolicyEvaluationAgent",
-          "status": "FAILED",
-          "impact": "Agent failed. Confidence reduced by 15.0%."
+          "status": "SUCCESS",
+          "impact": null
         },
         {
           "agent": "DecisionAgent",
           "status": "SUCCESS",
-          "impact": "Routed to MANUAL_REVIEW. Reason: Pipeline confidence degraded."
+          "impact": "Math Engine executed. Final outcome: REJECTED (\u20b90.0)"
         }
       ]
     }

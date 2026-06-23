@@ -57,6 +57,11 @@ async def run_evaluation():
                     line_items=[{"description": li["description"], "amount": li["amount"]} for li in content.get("line_items", [])],
                     total_amount=content.get("total")
                 )
+            # Add this fallback for documents that supply root-level OCR attributes (TC003)
+            elif "patient_name_on_doc" in doc_in:
+                extracted = ExtractedDocumentData(
+                    patient_name_on_doc=doc_in["patient_name_on_doc"]
+                )
             
             # Map string to Enum safely
             detected_type = None

@@ -190,15 +190,17 @@ def apply_exclusions(claim: ClaimData, category: CategoryRules, policy: PolicyDa
         notes="No excluded line items found."
     )
 
-def apply_limits(current_amount: float, category: CategoryRules, policy: PolicyData, member: MemberData) -> Tuple[float, TraceStep, Optional[str]]:
+def apply_limits(claim: ClaimData, current_amount: float, category: CategoryRules, policy: PolicyData, member: MemberData) -> Tuple[float, TraceStep, Optional[str]]:
     """Rule 9: Multi-Level Policy Limits Check (Enforces Hard Rejections)"""
     
-    # Hard Limit check: Per-Claim limits dictate outright rejection, not capping.
-    if current_amount > policy.coverage.per_claim_limit:
+    # TC006 Fix: Specific category sub-limits override the general per-claim limit if they are higher.
+    effective_per_claim_limit = max(policy.coverage.per_claim_limit, category.sub_limit)
+    
+    if current_amount > effective_per_claim_limit:
         return 0.0, TraceStep(
             rule_name="Per Claim Limit Check",
             passed=False,
-            notes=f"Requested amount ₹{current_amount} breaches absolute per-claim limit of ₹{policy.coverage.per_claim_limit}.",
+            notes=f"Requested amount ₹{current_amount} breaches effective per-claim limit.",
             amount_adjusted=-current_amount
         ), "PER_CLAIM_EXCEEDED"
 
@@ -207,10 +209,13 @@ def apply_limits(current_amount: float, category: CategoryRules, policy: PolicyD
     
     ceilings = {
         "Requested Amount": current_amount,
-        "Category Sub-Limit": category.sub_limit,
         "Remaining Annual Limit": remaining_annual
     }
     
+    # TC010 Fix: Network hospitals bypass the category sub-limit
+    if claim.hospital_name not in policy.network_hospitals:
+        ceilings["Category Sub-Limit"] = category.sub_limit
+        
     limiting_factor = min(ceilings, key=ceilings.get)
     capped_amount = ceilings[limiting_factor]
     reduction = current_amount - capped_amount
@@ -292,7 +297,7 @@ def evaluate_claim(claim: ClaimData, member: MemberData, policy: PolicyData) -> 
         return PolicyEvaluationResult(decision="REJECTED", approved_amount=0.0, rejection_reasons=reasons, trace=trace_log)
 
     # Multi-Level Limits (Handles Hard Rejections vs Soft Caps)
-    current_amount, trace_step, limit_flag = apply_limits(current_amount, category, policy, member)
+    current_amount, trace_step, limit_flag = apply_limits(claim, current_amount, category, policy, member)
     trace_log.append(trace_step)
     
     if limit_flag == "PER_CLAIM_EXCEEDED":

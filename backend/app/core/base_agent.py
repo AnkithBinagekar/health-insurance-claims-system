@@ -36,7 +36,7 @@ class BaseAgent(ABC):
             trace.errors.append(str(e))
             trace.errors.append(traceback.format_exc())
             print(f"\nERROR IN {self.agent_name}")
-            print(traceback.format_exc())
+            #print(traceback.format_exc())
             # Ledger-based confidence degradation
             penalty = settings.confidence_penalty_per_failure
             penalty_event = ConfidenceEvent(

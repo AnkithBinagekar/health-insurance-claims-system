@@ -4,7 +4,6 @@
 
 @layer base {
   body {
-    background-color: #F8F4EE;
-    color: #1F1F1F;
+    @apply bg-plum-bg text-plum-text antialiased;
   }
 }

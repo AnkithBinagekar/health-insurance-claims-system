@@ -1,54 +1,47 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, ChevronRight, X, File as FileIcon } from 'lucide-react';
+import { UploadCloud, FileText, ChevronRight, X, File as FileIcon, ArrowLeft, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-// import { api } from '../services/api'; // <-- Uncomment this when ready to link to your backend!
+import { api } from '../services/api'; // <-- The crucial API import restored
 
 export default function ClaimSubmission() {
   const navigate = useNavigate();
   
-  // --- Form State ---
+  // Form State
   const [memberId, setMemberId] = useState('EMP001');
   const [category, setCategory] = useState('CONSULTATION');
   const [amount, setAmount] = useState('1500');
   const [date, setDate] = useState('2024-11-01');
   
-  // --- File Upload State ---
+  // File & Upload State
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- Drag & Drop Handlers ---
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
+  // Drag & Drop Handlers
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
+  const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); };
+  
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
+    e.preventDefault(); 
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      // Append new files to existing files
+    if (e.dataTransfer.files?.length) {
       setFiles(prev => [...prev, ...Array.from(e.dataTransfer.files!)]);
     }
   };
-
+  
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files?.length) {
       setFiles(prev => [...prev, ...Array.from(e.target.files!)]);
     }
   };
-
+  
   const removeFile = (indexToRemove: number) => {
     setFiles(files.filter((_, index) => index !== indexToRemove));
   };
 
-  // --- Submission Handler ---
-  const handleSubmit = async (e: React.FormEvent) => {
+  // The REAL API Submission Handler
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     
     if (files.length === 0) {
@@ -56,144 +49,145 @@ export default function ClaimSubmission() {
       return;
     }
 
-    // TODO: Connect this to your actual API call
-    console.log("Submitting claim for:", memberId, category, amount, date);
-    console.log("Files attached:", files.map(f => f.name));
-    
-    /* Example API Integration:
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData();
       formData.append('member_id', memberId);
-      formData.append('category', category);
-      formData.append('amount', amount);
-      formData.append('date', date);
-      files.forEach(file => formData.append('documents', file));
+      formData.append('claim_category', category);
+      formData.append('claimed_amount', amount);
+      formData.append('treatment_date', date);
+      files.forEach(file => formData.append('files', file));
+
+      // 2. Send to Python Backend
+      const response: any = await api.submitClaim(formData); 
       
-      const response = await api.submitClaim(formData);
-      navigate(`/claim/${response.id}`);
+      // Print the exact response to the browser console for debugging
+      console.log("SUCCESS! Backend returned:", response);
+      
+      // 3. Smartly extract the Claim ID whether you use Fetch or Axios
+      const realClaimId = response?.claim_id || response?.data?.claim_id; 
+      
+      if (realClaimId) {
+        navigate(`/claim/${realClaimId}`);
+      } else {
+        // If it still fails, the console.log above will show us exactly why
+        throw new Error("Could not find claim_id in the response object.");
+      }
+      
     } catch (error) {
-      console.error("Submission failed", error);
+      console.error("Submission failed:", error);
+      alert("Failed to process claim. Check the browser console (F12) for the exact error.");
+      setIsSubmitting(false); 
     }
-    */
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       
-      <div className="max-w-3xl mx-auto text-center mb-10">
-        <div className="inline-flex items-center justify-center p-3 bg-indigo-100 rounded-full mb-4">
-          <FileText className="w-8 h-8 text-indigo-600" />
+      {/* Header & Navigation */}
+      <div className="max-w-3xl mx-auto mb-8">
+        <button 
+          onClick={() => navigate('/dashboard')} 
+          className="text-plum-muted hover:text-plum-primary flex items-center text-sm font-medium transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+        </button>
+        
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-white shadow-sm border border-gray-100 rounded-2xl mb-4">
+            <FileText className="w-8 h-8 text-plum-primary" />
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight">Submit New Claim</h1>
+          <p className="mt-2 text-lg text-plum-muted">Upload your medical documents for automated verification.</p>
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
-          Plum AI Pod
-        </h1>
-        <p className="mt-2 text-lg text-gray-600">
-          Intelligent Claims Processing Engine
-        </p>
       </div>
 
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">Submit New Claim</h2>
-          <p className="text-sm text-gray-500 mt-1">Upload your medical documents for automated verification.</p>
-        </div>
-
+      {/* Main Form Card */}
+      <div className="max-w-2xl mx-auto bg-white rounded-[16px] shadow-sm border border-gray-100 overflow-hidden">
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Member ID</label>
+              <label className="text-sm font-semibold text-plum-text">Member ID</label>
               <input 
-                type="text" 
-                value={memberId}
-                onChange={(e) => setMemberId(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                required
+                type="text" value={memberId} onChange={(e) => setMemberId(e.target.value)}
+                className="w-full px-4 py-2.5 bg-plum-bg/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-plum-primary/20 focus:border-plum-primary transition-all outline-none" 
+                required 
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Claim Category</label>
+              <label className="text-sm font-semibold text-plum-text">Claim Category</label>
               <select 
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                value={category} onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-2.5 bg-plum-bg/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-plum-primary/20 focus:border-plum-primary transition-all outline-none"
               >
                 <option value="CONSULTATION">CONSULTATION</option>
                 <option value="PHARMACY">PHARMACY</option>
                 <option value="HOSPITALIZATION">HOSPITALIZATION</option>
-                {/* Added missing backend categories! */}
                 <option value="DENTAL">DENTAL</option>
                 <option value="VISION">VISION</option>
               </select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Claimed Amount (₹)</label>
+              <label className="text-sm font-semibold text-plum-text">Claimed Amount (₹)</label>
               <input 
-                type="number" 
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                required
+                type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
+                className="w-full px-4 py-2.5 bg-plum-bg/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-plum-primary/20 focus:border-plum-primary transition-all outline-none" 
+                required 
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Treatment Date</label>
+              <label className="text-sm font-semibold text-plum-text">Treatment Date</label>
               <input 
-                type="date" 
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                required
+                type="date" value={date} onChange={(e) => setDate(e.target.value)}
+                className="w-full px-4 py-2.5 bg-plum-bg/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-plum-primary/20 focus:border-plum-primary transition-all outline-none" 
+                required 
               />
             </div>
           </div>
 
-          {/* Interactive Drag & Drop Upload Zone */}
+          {/* Interactive Drag & Drop Zone */}
           <div className="mt-8">
-            <label className="text-sm font-semibold text-gray-700 block mb-2">Medical Documents</label>
-            
+            <label className="text-sm font-semibold text-plum-text block mb-2">Medical Documents</label>
             <div 
               onClick={() => fileInputRef.current?.click()}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver} 
+              onDragLeave={handleDragLeave} 
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group
-                ${isDragging ? 'bg-indigo-50 border-indigo-500' : 'border-gray-300 hover:bg-indigo-50/50 hover:border-indigo-400'}`}
+              className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center justify-center text-center transition-all cursor-pointer group
+                ${isDragging ? 'bg-plum-primary/5 border-plum-primary' : 'border-gray-200 hover:bg-plum-bg hover:border-plum-primary/50'}`}
             >
-              <div className={`p-4 rounded-full transition-colors mb-4 ${isDragging ? 'bg-indigo-200' : 'bg-gray-100 group-hover:bg-indigo-100'}`}>
-                <UploadCloud className={`w-8 h-8 ${isDragging ? 'text-indigo-700' : 'text-gray-500 group-hover:text-indigo-600'}`} />
+              <div className={`p-4 rounded-full transition-colors mb-4 ${isDragging ? 'bg-plum-primary/10' : 'bg-plum-bg group-hover:bg-white shadow-sm'}`}>
+                <UploadCloud className={`w-8 h-8 ${isDragging ? 'text-plum-primary' : 'text-plum-muted group-hover:text-plum-primary'}`} />
               </div>
-              <p className="text-gray-700 font-medium mb-1">
-                <span className="text-indigo-600 hover:underline">Click to upload</span> or drag and drop
+              <p className="font-medium mb-1 text-plum-text">
+                <span className="text-plum-primary hover:underline">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs text-gray-500">Images or PDFs up to 10MB</p>
+              <p className="text-xs text-plum-muted">Images or PDFs up to 10MB</p>
               
               <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handleFileInput}
-                className="hidden" 
-                multiple 
-                accept="image/*,.pdf"
+                type="file" ref={fileInputRef} onChange={handleFileInput} 
+                className="hidden" multiple accept="image/*,.pdf" 
               /> 
             </div>
 
-            {/* Render attached files list below the dropzone */}
+            {/* Attached Files List */}
             {files.length > 0 && (
               <div className="mt-4 space-y-2">
                 {files.map((file, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div key={idx} className="flex items-center justify-between p-3 bg-plum-bg/50 border border-gray-200 rounded-xl">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <FileIcon className="w-5 h-5 text-indigo-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-gray-700 truncate">{file.name}</span>
+                      <FileIcon className="w-5 h-5 text-plum-purple flex-shrink-0" />
+                      <span className="text-sm font-medium text-plum-text truncate">{file.name}</span>
                     </div>
                     <button 
                       type="button" 
-                      onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                      className="p-1 hover:bg-gray-200 rounded text-gray-500 hover:text-red-500 transition-colors"
+                      onClick={(e) => { e.stopPropagation(); removeFile(idx); }} 
+                      className="p-1.5 hover:bg-white rounded-md text-plum-muted hover:text-plum-primary transition-colors shadow-sm"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -203,13 +197,26 @@ export default function ClaimSubmission() {
             )}
           </div>
 
+          {/* Submit Button (Changes to a spinner when loading!) */}
           <div className="pt-4">
             <button 
               type="submit" 
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold text-lg py-3.5 rounded-xl hover:bg-indigo-700 hover:shadow-lg transform transition-all active:scale-[0.98]"
+              disabled={isSubmitting}
+              className={`w-full flex items-center justify-center gap-2 bg-plum-primary text-white font-bold text-lg py-3.5 rounded-xl transition-all ${
+                isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-plum-hover hover:shadow-lg transform active:scale-[0.98]'
+              }`}
             >
-              Process Claim Automatically
-              <ChevronRight className="w-5 h-5" />
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Processing via AI Agents...
+                </>
+              ) : (
+                <>
+                  Process Claim Automatically
+                  <ChevronRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </div>
           

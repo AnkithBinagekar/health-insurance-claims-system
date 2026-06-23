@@ -30,8 +30,8 @@ class OcrOutputSchema(BaseModel):
 class OCRExtractionAgent(BaseAgent):
     
     async def _process(self, context: ClaimContext, trace: AgentTrace) -> ClaimContext:
-        model = settings.pro_model 
-        
+       # model = settings.pro_model 
+        model = settings.flash_model
         for doc in context.input.documents:
             # Add this safe fallback
             doc_type_str = doc.detected_type.value if doc.detected_type else "medical document"

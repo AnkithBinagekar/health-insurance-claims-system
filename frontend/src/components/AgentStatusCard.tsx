@@ -13,7 +13,33 @@ export const AgentStatusCard: React.FC<{ trace: AgentTrace }> = ({ trace }) => {
       default: return 'border-blue-500 bg-blue-50';
     }
   };
+const getShortReason = (errText?: string) => {
+  if (!errText) return "Internal agent error.";
 
+  if (
+    errText.includes("429") ||
+    errText.includes("RESOURCE_EXHAUSTED")
+  ) {
+    return "Gemini API quota exceeded (429).";
+  }
+
+  if (errText.includes("FileNotFoundError")) {
+    return "Required file could not be accessed.";
+  }
+
+  if (errText.includes("AttributeError")) {
+    return "Unexpected data format encountered.";
+  }
+
+  if (errText.includes("ValueError")) {
+    return "Invalid data received during processing.";
+  }
+
+  const firstLine = errText.split("\n")[0];
+  const cleanLine = firstLine.split("{")[0].trim();
+
+  return cleanLine || "An unexpected error occurred.";
+};
   const getStatusIcon = () => {
     switch (trace.status) {
       case "SUCCESS": return <CheckCircle2 className="w-5 h-5 text-green-600" />;
@@ -57,7 +83,7 @@ export const AgentStatusCard: React.FC<{ trace: AgentTrace }> = ({ trace }) => {
             <XCircle className="w-3 h-3 mr-1" /> Component Execution Failed
           </p>
           <div className="text-xs text-red-800 mb-2 space-y-1 ml-4">
-            <p><span className="font-semibold">Reason:</span> {trace.errors[0]?.split('\n')[0] || "Internal agent error."}</p>
+            <p><span className="font-semibold">Reason:</span> {getShortReason(trace.errors[0])}</p>
             <p><span className="font-semibold">Impact:</span> {trace.decision_impact || "Some fields may be unavailable."}</p>
             <p><span className="font-semibold">Recovery:</span> Pipeline continued using available data.</p>
           </div>

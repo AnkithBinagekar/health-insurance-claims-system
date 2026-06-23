@@ -12,7 +12,8 @@ export interface DecisionResult {
 export interface SystemTrace {
   claim_id?: string;
   base_confidence?: number;
-  confidence_ledger?: Array<{ new_confidence: number }>;
+  current_confidence_score?: number;
+  confidence_ledger?: Array<{ penalty_applied: number }>;
 }
 
 interface DecisionCardProps {
@@ -55,10 +56,20 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
   // Calculate final confidence safely without rendering NaN
   const getSafeConfidence = () => {
     if (!trace) return 0;
-    let conf = trace.base_confidence ?? 0;
-    if (trace.confidence_ledger && trace.confidence_ledger.length > 0) {
-      conf = trace.confidence_ledger[trace.confidence_ledger.length - 1].new_confidence ?? conf;
+    
+    // 1. Prefer the backend's pre-calculated current_confidence_score
+    if (trace.current_confidence_score !== undefined && trace.current_confidence_score !== null) {
+      const finalVal = Number(trace.current_confidence_score) * 100;
+      return isNaN(finalVal) ? 0 : finalVal;
     }
+    
+    // 2. Safe Fallback: Calculate from base_confidence minus ledger penalties
+    let conf = trace.base_confidence ?? 1;
+    if (trace.confidence_ledger && trace.confidence_ledger.length > 0) {
+      const totalPenalty = trace.confidence_ledger.reduce((sum, event) => sum + (event.penalty_applied || 0), 0);
+      conf = Math.max(0, conf - totalPenalty);
+    }
+    
     const finalVal = Number(conf) * 100;
     return isNaN(finalVal) ? 0 : finalVal;
   };

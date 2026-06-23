@@ -14,7 +14,7 @@ class PolicyEvaluationAgent(BaseAgent):
         cat_rules = policy.get("opd_categories", {}).get(category_key, {})
         
 # Step 0: Check Base Coverage (TC001/Uncovered Category)
-        if context.input.claim_category.value not in context.hydrated.policy.coverage_categories:
+        if context.input.claim_category.value.lower() not in policy.get("opd_categories", {}):
             context.result.rejection_reasons.append(f"{context.input.claim_category.value}_NOT_COVERED")
             context.result.notes.append(f"Claim category {context.input.claim_category.value} is not covered under this policy.")
             return context # Fast fail
@@ -103,7 +103,10 @@ class PolicyEvaluationAgent(BaseAgent):
         for doc in context.input.documents:
             if doc.extracted_data and hasattr(doc.extracted_data, 'line_items'):
                 for li in doc.extracted_data.line_items:
-                    items.append(LineItem(description=li.description, amount=li.amount))
+                    if isinstance(li, dict):
+                        items.append(LineItem(description=li.get("description", "Unknown"), amount=li.get("amount", 0.0)))
+                    else:
+                        items.append(LineItem(description=li.description, amount=li.amount))
         return items
 
     def _is_network_hospital(self, context: ClaimContext, policy: dict) -> bool:

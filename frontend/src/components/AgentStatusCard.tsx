@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2, XCircle, SkipForward, AlertTriangle, Clock } from 'lucide-react';
 import type { AgentTrace } from '../types';
 
 export const AgentStatusCard: React.FC<{ trace: AgentTrace }> = ({ trace }) => {
+  const [showErrorDetails, setShowErrorDetails] = useState(false);
   const getStatusColor = () => {
     switch (trace.status) {
       case "SUCCESS": return 'border-green-500 bg-green-50';
@@ -51,11 +52,27 @@ export const AgentStatusCard: React.FC<{ trace: AgentTrace }> = ({ trace }) => {
       )}
 
       {trace.errors.length > 0 && (
-        <div className="mb-2">
-          <p className="text-xs font-bold text-red-600 flex items-center"><XCircle className="w-3 h-3 mr-1"/> Errors</p>
-          <ul className="list-disc list-inside text-xs text-red-700 ml-1">
-            {trace.errors.map((e, i) => <li key={i}>{e}</li>)}
-          </ul>
+        <div className="mb-2 bg-red-50 p-3 rounded border border-red-100">
+          <p className="text-xs font-bold text-red-700 flex items-center mb-2">
+            <XCircle className="w-3 h-3 mr-1" /> Component Execution Failed
+          </p>
+          <div className="text-xs text-red-800 mb-2 space-y-1 ml-4">
+            <p><span className="font-semibold">Reason:</span> {trace.errors[0]?.split('\n')[0] || "Internal agent error."}</p>
+            <p><span className="font-semibold">Impact:</span> {trace.decision_impact || "Some fields may be unavailable."}</p>
+            <p><span className="font-semibold">Recovery:</span> Pipeline continued using available data.</p>
+          </div>
+          <button 
+            onClick={() => setShowErrorDetails(!showErrorDetails)}
+            className="text-[10px] text-red-600 hover:text-red-800 underline ml-4 font-semibold transition-colors"
+          >
+            {showErrorDetails ? "Hide Technical Details" : "View Technical Details"}
+          </button>
+          
+          {showErrorDetails && (
+            <div className="mt-2 p-2 bg-red-950 text-red-100 rounded text-[10px] font-mono overflow-x-auto whitespace-pre-wrap max-h-40 overflow-y-auto">
+              {trace.errors.map((e, i) => <div key={i} className="mb-2 pb-2 border-b border-red-800/50 last:border-0">{e}</div>)}
+            </div>
+          )}
         </div>
       )}
 

@@ -44,7 +44,7 @@ class DecisionAgent(BaseAgent):
                     for key in ["hospital_name", "diagnosis", "procedure_name", "pre_auth_id"]:
                         if getattr(doc.extracted_data, key, None):
                             extracted_data[key] = getattr(doc.extracted_data, key)
-                    for li in getattr(doc.extracted_data, "line_items", []):
+                    for li in getattr(doc.extracted_data, "line_items", []) or []:
                         extracted_data["line_items"].append(li if isinstance(li, dict) else {"description": li.description, "amount": li.amount})
         
         # 3. Map to our strict PolicyService Pydantic models

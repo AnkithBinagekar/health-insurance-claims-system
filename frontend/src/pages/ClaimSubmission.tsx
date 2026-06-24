@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, ChevronRight, X, File as FileIcon, ArrowLeft, Loader2 } from 'lucide-react';
+import { UploadCloud, FileText, ChevronRight, X, File as FileIcon, ArrowLeft, Loader2, Info, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api'; // <-- The crucial API import restored
+import { api } from '../services/api'; 
+import { DOCUMENT_REQUIREMENTS, formatDocName } from '../utils/policyRequirements';
 
 export default function ClaimSubmission() {
   const navigate = useNavigate();
@@ -40,16 +41,26 @@ export default function ClaimSubmission() {
     setFiles(files.filter((_, index) => index !== indexToRemove));
   };
 
+// --- NEW: Derived State for UX Improvements ---
+  const currentRequirements = DOCUMENT_REQUIREMENTS[category] || { required: [], optional: [] };
+  const minRequired = currentRequirements.required.length || 1; // Fallback to 1 if empty
+  const currentUploadedCount = files.length;
+  const isRequirementMet = currentUploadedCount >= minRequired;
+  const docsNeeded = Math.max(0, minRequired - currentUploadedCount);
+  // ----------------------------------------------
+
   // The REAL API Submission Handler
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     
-    if (files.length === 0) {
-      alert("Please upload at least one medical document.");
+    // --- NEW: Frontend Shift-Left Validation ---
+    const requirements = DOCUMENT_REQUIREMENTS[category];
+    const minRequired = requirements?.required.length || 1;
+
+    if (files.length < minRequired) {
+      alert(`Validation Error: ${category} claims require at least ${minRequired} document(s).\n\nPlease ensure you have uploaded:\n${requirements.required.map(doc => `- ${formatDocName(doc)}`).join('\n')}`);
       return;
     }
-
-    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
@@ -124,10 +135,11 @@ export default function ClaimSubmission() {
                 className="w-full px-4 py-2.5 bg-plum-bg/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-plum-primary/20 focus:border-plum-primary transition-all outline-none"
               >
                 <option value="CONSULTATION">CONSULTATION</option>
+                <option value="DIAGNOSTIC">DIAGNOSTIC</option>
                 <option value="PHARMACY">PHARMACY</option>
-                <option value="HOSPITALIZATION">HOSPITALIZATION</option>
                 <option value="DENTAL">DENTAL</option>
                 <option value="VISION">VISION</option>
+                <option value="ALTERNATIVE_MEDICINE">ALTERNATIVE MEDICINE</option>
               </select>
             </div>
 
@@ -148,11 +160,64 @@ export default function ClaimSubmission() {
                 required 
               />
             </div>
-          </div>
+          </div> {/* <-- This is the end of the input grid */}
+
+          {/* --- UPDATED: Dynamic Requirements Banner --- */}
+          {currentRequirements.required.length > 0 && (
+            <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-5 mt-6">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                <div className="w-full">
+                  <h4 className="text-sm font-bold text-indigo-900">
+                    Required Documents for {category.replace('_', ' ')}
+                  </h4>
+                  <p className="text-xs text-indigo-700 mt-1 mb-3">
+                    To ensure rapid AI processing, please upload the following documents:
+                  </p>
+                  
+                  {/* Required Documents List */}
+                  <div className="flex flex-wrap gap-3">
+                    {currentRequirements.required.map((doc, idx) => (
+                      <div key={`req-${idx}`} className="flex items-center text-sm font-medium text-indigo-800 bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 mr-2 flex-shrink-0" />
+                        {formatDocName(doc)}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Optional Documents List */}
+                  {currentRequirements.optional.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-indigo-200/60">
+                      <p className="text-xs font-semibold text-indigo-800/60 mb-2">Optional Documents (Improves processing speed):</p>
+                      <div className="flex flex-wrap gap-2">
+                        {currentRequirements.optional.map((doc, idx) => (
+                          <div key={`opt-${idx}`} className="flex items-center text-xs font-medium text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
+                            <span className="mr-1.5 text-gray-400">•</span>
+                            {formatDocName(doc)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          )}
+          {/* ---------------------------------------- */}
 
           {/* Interactive Drag & Drop Zone */}
           <div className="mt-8">
-            <label className="text-sm font-semibold text-plum-text block mb-2">Medical Documents</label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-semibold text-plum-text block">Medical Documents</label>
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-full transition-colors duration-300 ${
+                isRequirementMet 
+                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                  : 'bg-amber-100 text-amber-700 border border-amber-200'
+              }`}>
+                Uploaded: {currentUploadedCount} / {minRequired} Required {isRequirementMet && '✓'}
+              </span>
+            </div>
             <div 
               onClick={() => fileInputRef.current?.click()}
               onDragOver={handleDragOver} 
@@ -201,15 +266,25 @@ export default function ClaimSubmission() {
           <div className="pt-4">
             <button 
               type="submit" 
-              disabled={isSubmitting}
-              className={`w-full flex items-center justify-center gap-2 bg-plum-primary text-white font-bold text-lg py-3.5 rounded-xl transition-all ${
-                isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-plum-hover hover:shadow-lg transform active:scale-[0.98]'
+              disabled={isSubmitting || !isRequirementMet}
+              className={`w-full flex items-center justify-center gap-2 font-bold text-lg py-3.5 rounded-xl transition-all duration-200 ${
+                isSubmitting 
+                  ? 'bg-plum-primary opacity-70 cursor-not-allowed text-white' 
+                  : !isRequirementMet
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                    : 'bg-plum-primary text-white hover:bg-plum-hover hover:shadow-lg transform active:scale-[0.98]'
               }`}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Processing via AI Agents...
+                </>
+              ) : !isRequirementMet ? (
+                <>
+                  {docsNeeded === 1 
+                    ? "Submit Claim (Need 1 More Document)" 
+                    : `Submit Claim (Need ${docsNeeded} Documents)`}
                 </>
               ) : (
                 <>

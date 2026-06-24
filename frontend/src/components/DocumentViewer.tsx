@@ -1,5 +1,6 @@
+/// <reference types="vite/client" />
 import { useState } from 'react';
-
+import { AlertTriangle } from 'lucide-react';
 interface LineItem {
   description: string;
   amount: number;
@@ -16,9 +17,10 @@ interface DocumentViewerProps {
   documentUrl: string;
   extractedData?: ExtractedData;
   isHalted?: boolean;
+  haltMessage?: string;
 }
 
-export default function DocumentViewer({ documentUrl, extractedData, isHalted }: DocumentViewerProps) {
+export default function DocumentViewer({ documentUrl, extractedData, isHalted, haltMessage }: DocumentViewerProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const lineItems = extractedData?.line_items || [];
 
@@ -68,59 +70,68 @@ export default function DocumentViewer({ documentUrl, extractedData, isHalted }:
         })}
       </div>
 
-      {/* RIGHT PANEL: The Interactive Data Table or Halted Message */}
+      {/* RIGHT PANEL: The Interactive Data Table & Warning Banners */}
       <div className="w-full md:w-1/2">
         <h3 className="text-xl font-semibold mb-4 text-gray-800">
-          Financial Breakdown
+          {isHalted ? "Extracted Data (Not Adjudicated)" : "Financial Breakdown"}
         </h3>
         
-        {isHalted ? (
-          <div className="bg-gray-50 border border-gray-200 border-dashed rounded-lg p-8 flex items-center justify-center text-center h-[calc(100%-3rem)]">
-            <p className="text-gray-500 font-medium">
-              Claim processing stopped before financial adjudication.
+        {/* Contextual Warning Banner */}
+        {isHalted && (
+          <div className="mb-4 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+            <p className="text-amber-800 font-bold flex items-center text-sm mb-1">
+              <AlertTriangle className="w-4 h-4 mr-1.5" />
+              Identity Mismatch Detected
+
+The document belongs to Rajesh Kumar, but the claim was submitted under Amit Verma.
+
+The AI extracted the items below successfully, however policy adjudication was not executed because identity validation failed.
+            </p>
+            <p className="text-amber-700 text-xs">
+              {haltMessage || "The AI successfully extracted these items, but the pipeline stopped before policy rules could be applied."}
             </p>
           </div>
-        ) : (
-          <>
-            <div className="bg-white rounded-lg shadow border overflow-hidden">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-gray-100 border-b">
-                  <tr>
-                    <th className="p-3">Description</th>
-                    <th className="p-3 text-right">Amount</th>
-                    <th className="p-3 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {lineItems.map((item, index) => (
-                    <tr 
-                      key={`row-${index}-${item.description}`}
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                      className={`cursor-pointer transition-colors
-                        ${hoveredIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                      `}
-                    >
-                      <td className="p-3 text-gray-700">{item.description}</td>
-                      <td className="p-3 text-right font-mono text-gray-900">₹{item.amount.toFixed(2)}</td>
-                      <td className="p-3 text-center">
-                        {item.is_covered ? (
-                          <span className="text-green-600 bg-green-100 px-2 py-1 rounded text-xs font-medium">Covered</span>
-                        ) : (
-                          <span className="text-red-600 bg-red-100 px-2 py-1 rounded text-xs font-medium" title={item.rejection_reason || "Excluded"}>Excluded</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
-              💡 <span className="italic">Hover over a row to view its exact location on the source document.</span>
-            </p>
-          </>
         )}
+
+        <div className="bg-white rounded-lg shadow border overflow-hidden">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="p-3">Description</th>
+                <th className="p-3 text-right">Amount</th>
+                <th className="p-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {lineItems.map((item, index) => (
+                <tr 
+                  key={`row-${index}-${item.description}`}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  className={`cursor-pointer transition-colors
+                    ${hoveredIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'}
+                  `}
+                >
+                  <td className="p-3 text-gray-700">{item.description}</td>
+                  <td className="p-3 text-right font-mono text-gray-900">₹{item.amount.toFixed(2)}</td>
+                  <td className="p-3 text-center">
+                    {isHalted ? (
+                      <span className="text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs font-medium">Not Evaluated</span>
+                    ) : item.is_covered ? (
+                      <span className="text-green-600 bg-green-100 px-2 py-1 rounded text-xs font-medium">Covered</span>
+                    ) : (
+                      <span className="text-red-600 bg-red-100 px-2 py-1 rounded text-xs font-medium" title={item.rejection_reason || "Excluded"}>Excluded</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
+          💡 <span className="italic">Hover over a row to view its exact location on the source document.</span>
+        </p>
       </div>
       
     </div>

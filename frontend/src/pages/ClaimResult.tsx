@@ -69,6 +69,7 @@ const ClaimResult: React.FC = () => {
             documentUrl={data.input.documents[0].storage_url} 
             extractedData={data.input.documents[0].extracted_data}
             isHalted={data.state.is_halted}
+            haltMessage={data.state.halt_message}
           />
         </div>
       )}

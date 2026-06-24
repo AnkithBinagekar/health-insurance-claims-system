@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-23T19:17:46.046637",
+  "timestamp": "2026-06-24T18:00:05.179535",
   "results": [
     {
       "case_id": "TC001",
@@ -66,7 +66,7 @@
       "halt_reason": null,
       "approved_amount": 1350.0,
       "system_notes": [
-        "Co-pay (10%) applied: -\u20b9150.0",
+        "Co-pay (10%) applied: -\u20b9150.00",
         "\u2705 [Waiting Period Check] Cleared. Member active for 214 days (Requires 30 for standard initial enrollment).",
         "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
         "\u2705 [Network Discount] Hospital 'City Clinic, Bengaluru' is out-of-network. No base discount applied.",
@@ -151,7 +151,7 @@
       "halt_reason": null,
       "approved_amount": 8000.0,
       "system_notes": [
-        "Claimed amount (\u20b912000.0) exceeds per claim limit of \u20b95000.",
+        "Final payout capped at per-claim limit of \u20b95000.",
         "\u2705 [Waiting Period Check] Cleared. Member active for 197 days (Requires 30 for standard initial enrollment).",
         "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
         "\u2705 [Network Discount] Hospital 'Smile Dental Clinic' is out-of-network. No base discount applied.",
@@ -236,8 +236,8 @@
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "Co-pay (10%) applied: -\u20b9200.0",
-        "Claimed amount (\u20b97500.0) exceeds per claim limit of \u20b95000.",
+        "Amount capped at category sub-limit of \u20b92000",
+        "Co-pay (10%) applied: -\u20b9200.00",
         "\u2705 [Waiting Period Check] Cleared. Member active for 202 days (Requires 30 for standard initial enrollment).",
         "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
         "\u2705 [Network Discount] Hospital 'Unknown Hospital' is out-of-network. No base discount applied.",
@@ -282,7 +282,7 @@
       "approved_amount": 0.0,
       "system_notes": [
         "Fraud Signal: 3 prior claims detected for 2024-10-30.",
-        "Co-pay (10%) applied: -\u20b90.0"
+        "Co-pay (10%) applied: -\u20b90.00"
       ],
       "trace_summary": [
         {
@@ -321,8 +321,9 @@
       "halt_reason": null,
       "approved_amount": 3240.0,
       "system_notes": [
-        "Network discount (20%) applied: -\u20b9400.0",
-        "Co-pay (10%) applied: -\u20b9160.0",
+        "Amount capped at category sub-limit of \u20b92000",
+        "Network discount (20%) applied: -\u20b9400.00",
+        "Co-pay (10%) applied: -\u20b9160.00",
         "\u2705 [Waiting Period Check] Cleared. Member active for 216 days (Requires 30 for standard initial enrollment).",
         "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
         "\u2705 [Network Discount] Applied 20.0% discount for network hospital: Apollo Hospitals.",
@@ -412,8 +413,8 @@
       "halt_reason": null,
       "approved_amount": 0.0,
       "system_notes": [
-        "Co-pay (10%) applied: -\u20b9200.0",
-        "Claimed amount (\u20b98000.0) exceeds per claim limit of \u20b95000.",
+        "Amount capped at category sub-limit of \u20b92000",
+        "Co-pay (10%) applied: -\u20b9200.00",
         "\u2705 [Waiting Period Check] Cleared. Member active for 200 days (Requires 30 for standard initial enrollment).",
         "\u2705 [Pre-Authorization Check] No pre-auth required, or valid token provided.",
         "\u2705 [Network Discount] Hospital 'Unknown Hospital' is out-of-network. No base discount applied.",

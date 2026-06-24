@@ -13,7 +13,11 @@ export interface SystemTrace {
   claim_id?: string;
   base_confidence?: number;
   current_confidence_score?: number;
-  confidence_ledger?: Array<{ penalty_applied: number }>;
+  confidence_ledger?: Array<{ 
+    penalty_applied: number;
+    agent_name: string;
+    reason: string;
+  }>;
 }
 
 interface DecisionCardProps {
@@ -119,19 +123,48 @@ export const DecisionCard: React.FC<DecisionCardProps> = ({ result, trace, halte
         ) : (
           <>
             {/* Simplicity & Focus: AI Confidence represented visually */}
-            <div>
+            <div className="mb-4">
               <div className="flex justify-between items-end mb-2">
                 <span className="text-sm font-semibold text-gray-700">AI Confidence Score</span>
                 <span className={`text-lg font-bold ${finalConfidence < 80 ? 'text-amber-600' : 'text-emerald-600'}`}>
                   {finalConfidence.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-3">
                 <div 
                   className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${finalConfidence < 80 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
                   style={{ width: `${finalConfidence}%` }}
                 ></div>
               </div>
+
+              {/* --- NEW: Feature 3 Confidence Breakdown --- */}
+              {trace.confidence_ledger && trace.confidence_ledger.length > 0 && (
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs font-mono mt-2">
+                  <div className="flex justify-between text-slate-500 pb-1 border-b border-slate-200 mb-2">
+                    <span>Base Confidence</span>
+                    <span>100%</span>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    {trace.confidence_ledger.map((event, idx) => (
+                      <div key={idx} className="flex justify-between text-rose-600 items-start gap-4">
+                        <span className="truncate flex-1" title={event.reason}>
+                          ↳ [{event.agent_name}] {event.reason}
+                        </span>
+                        <span className="whitespace-nowrap font-semibold">
+                          -{(event.penalty_applied * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between font-bold text-slate-800 pt-2 border-t border-slate-200 mt-2">
+                    <span>Final Calculated Confidence</span>
+                    <span>{finalConfidence.toFixed(1)}%</span>
+                  </div>
+                </div>
+              )}
+              {/* ------------------------------------------- */}
             </div>
 
             {/* Structured Reasons & Notes */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface LineItem {
   description: string;
@@ -15,9 +15,10 @@ interface ExtractedData {
 interface DocumentViewerProps {
   documentUrl: string;
   extractedData?: ExtractedData;
+  isHalted?: boolean;
 }
 
-export default function DocumentViewer({ documentUrl, extractedData }: DocumentViewerProps) {
+export default function DocumentViewer({ documentUrl, extractedData, isHalted }: DocumentViewerProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const lineItems = extractedData?.line_items || [];
 
@@ -67,49 +68,59 @@ export default function DocumentViewer({ documentUrl, extractedData }: DocumentV
         })}
       </div>
 
-      {/* RIGHT PANEL: The Interactive Data Table */}
+      {/* RIGHT PANEL: The Interactive Data Table or Halted Message */}
       <div className="w-full md:w-1/2">
         <h3 className="text-xl font-semibold mb-4 text-gray-800">
           Financial Breakdown
         </h3>
         
-        <div className="bg-white rounded-lg shadow border overflow-hidden">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-100 border-b">
-              <tr>
-                <th className="p-3">Description</th>
-                <th className="p-3 text-right">Amount</th>
-                <th className="p-3 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {lineItems.map((item, index) => (
-                <tr 
-                  key={`row-${index}-${item.description}`} // FIX: Safer React Key
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  className={`cursor-pointer transition-colors
-                    ${hoveredIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                  `}
-                >
-                  <td className="p-3 text-gray-700">{item.description}</td>
-                  <td className="p-3 text-right font-mono text-gray-900">₹{item.amount.toFixed(2)}</td>
-                  <td className="p-3 text-center">
-                    {item.is_covered ? (
-                      <span className="text-green-600 bg-green-100 px-2 py-1 rounded text-xs font-medium">Covered</span>
-                    ) : (
-                      <span className="text-red-600 bg-red-100 px-2 py-1 rounded text-xs font-medium" title={item.rejection_reason || "Excluded"}>Excluded</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
-          💡 <span className="italic">Hover over a row to view its exact location on the source document.</span>
-        </p>
+        {isHalted ? (
+          <div className="bg-gray-50 border border-gray-200 border-dashed rounded-lg p-8 flex items-center justify-center text-center h-[calc(100%-3rem)]">
+            <p className="text-gray-500 font-medium">
+              Claim processing stopped before financial adjudication.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="bg-white rounded-lg shadow border overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-100 border-b">
+                  <tr>
+                    <th className="p-3">Description</th>
+                    <th className="p-3 text-right">Amount</th>
+                    <th className="p-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {lineItems.map((item, index) => (
+                    <tr 
+                      key={`row-${index}-${item.description}`}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
+                      className={`cursor-pointer transition-colors
+                        ${hoveredIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'}
+                      `}
+                    >
+                      <td className="p-3 text-gray-700">{item.description}</td>
+                      <td className="p-3 text-right font-mono text-gray-900">₹{item.amount.toFixed(2)}</td>
+                      <td className="p-3 text-center">
+                        {item.is_covered ? (
+                          <span className="text-green-600 bg-green-100 px-2 py-1 rounded text-xs font-medium">Covered</span>
+                        ) : (
+                          <span className="text-red-600 bg-red-100 px-2 py-1 rounded text-xs font-medium" title={item.rejection_reason || "Excluded"}>Excluded</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
+              💡 <span className="italic">Hover over a row to view its exact location on the source document.</span>
+            </p>
+          </>
+        )}
       </div>
       
     </div>

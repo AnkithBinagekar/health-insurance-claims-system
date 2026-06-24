@@ -58,18 +58,17 @@ const ClaimResult: React.FC = () => {
       </div>
 
      {/* --- NEW: The Interactive Bounding Box Viewer --- */}
-      {/* Only render this if the claim didn't halt early AND we have extracted line items */}
+      {/* Always render DocumentViewer if a document exists, handle halted state internally */}
       {data.input.documents && 
-       data.input.documents.length > 0 && 
-       data.input.documents[0].extracted_data?.line_items && 
-       data.input.documents[0].extracted_data.line_items.length > 0 && (
+       data.input.documents.length > 0 && (
         <div className="mt-8 pt-8 border-t border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Document Verification</h2>
           <p className="text-gray-500 mb-6">Interactive view of the AI's spatial extraction.</p>
           
           <DocumentViewer 
             documentUrl={data.input.documents[0].storage_url} 
-            extractedData={data.input.documents[0].extracted_data} 
+            extractedData={data.input.documents[0].extracted_data}
+            isHalted={data.state.is_halted}
           />
         </div>
       )}

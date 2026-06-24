@@ -1,13 +1,13 @@
 import json
 from pydantic import BaseModel, Field
-from google.genai import types
+
 
 from backend.app.core.base_agent import BaseAgent
 from backend.app.schemas.claim import ClaimContext
 from backend.app.schemas.trace import AgentTrace
 from backend.app.schemas.enums import DocumentType
 from backend.app.core.config import settings
-from backend.app.core.ai_utils import ai_client, get_document_part
+from backend.app.core.ai_utils import cached_generate_content
 
 class ClassificationOutput(BaseModel):
     detected_type: DocumentType = Field(description="The primary classification of the document.")
@@ -28,19 +28,13 @@ class DocumentClassifierAgent(BaseAgent):
             If it is completely unrelated to medical claims, select UNKNOWN.
             """
             
-            doc_part = get_document_part(doc.storage_url)
-            
-            response = ai_client.models.generate_content(
-                model=model,
-                contents=[doc_part, prompt],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=ClassificationOutput,
-                    temperature=0.1
-                )
-            )
-            
-            result = ClassificationOutput.model_validate_json(response.text)
+            result = await cached_generate_content(
+                 file_path=doc.storage_url,
+                 prompt=prompt,
+                 agent_name="DocumentClassifierAgent",
+                 model_name=model,
+                 response_schema=ClassificationOutput
+             )
             doc.detected_type = result.detected_type
             trace.extracted_keys.append(f"{doc.file_name} -> {result.detected_type.value}")
             

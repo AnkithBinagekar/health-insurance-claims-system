@@ -1,13 +1,13 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field
-from google.genai import types
+
 
 from backend.app.core.base_agent import BaseAgent
 from backend.app.schemas.claim import ClaimContext
 from backend.app.schemas.trace import AgentTrace
 from backend.app.schemas.domain import ExtractedDocumentData
 from backend.app.core.config import settings
-from backend.app.core.ai_utils import ai_client, get_document_part
+from backend.app.core.ai_utils import cached_generate_content
 
 # Specific schemas for Gemini to adhere to
 class ExtractedLineItem(BaseModel):
@@ -48,20 +48,15 @@ class OCRExtractionAgent(BaseAgent):
             in the format [ymin, xmin, ymax, xmax] scaled to 1000.
             """
             
-            doc_part = get_document_part(doc.storage_url)
-            # ... rest of the file remains the same
-            
-            response = ai_client.models.generate_content(
-                model=model,
-                contents=[doc_part, prompt],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=OcrOutputSchema,
-                    temperature=0.0 # Deterministic extraction
-                )
-            )
-            
-            extracted_dict = OcrOutputSchema.model_validate_json(response.text).model_dump(exclude_none=True)
+            ocr_result = await cached_generate_content(
+                 file_path=doc.storage_url,
+                 prompt=prompt,
+                 agent_name="OCRExtractionAgent",
+                 model_name=model,
+                 response_schema=OcrOutputSchema
+             )
+             
+            extracted_dict = ocr_result.model_dump(exclude_none=True)
             
             # Map into the domain schema
             doc.extracted_data = ExtractedDocumentData(**extracted_dict)

@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
-from google.genai import types
+
 
 from backend.app.core.base_agent import BaseAgent
 from backend.app.schemas.claim import ClaimContext
 from backend.app.schemas.trace import AgentTrace
 from backend.app.schemas.enums import DocumentType, AgentStatus
 from backend.app.core.config import settings
-from backend.app.core.ai_utils import ai_client, get_document_part
+from backend.app.core.ai_utils import cached_generate_content
 
 class QualityAssessment(BaseModel):
     is_readable: bool = Field(description="True if the core text/amounts can be read, False if blurry/cut off.")
@@ -27,19 +27,13 @@ class DocumentVerificationAgent(BaseAgent):
             Can the key details (names, dates, amounts, diagnosis) be clearly read?
             Be lenient with handwriting unless it is completely illegible.
             """
-            doc_part = get_document_part(doc.storage_url)
-            
-            response = ai_client.models.generate_content(
-                model=model,
-                contents=[doc_part, prompt],
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=QualityAssessment,
-                    temperature=0.1
-                )
-            )
-            
-            assessment = QualityAssessment.model_validate_json(response.text)
+            assessment = await cached_generate_content(
+                 file_path=doc.storage_url,
+                 prompt=prompt,
+                 agent_name="DocumentVerificationAgent",
+                 model_name=model,
+                 response_schema=QualityAssessment
+             )
             doc.is_readable = assessment.is_readable
             
             if not doc.is_readable:

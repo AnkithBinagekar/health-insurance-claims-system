@@ -62,6 +62,8 @@ export default function ClaimSubmission() {
       return;
     }
 
+    setIsSubmitting(true); // <-- ADD THIS EXACT LINE HERE
+
     try {
       const formData = new FormData();
       formData.append('member_id', memberId);

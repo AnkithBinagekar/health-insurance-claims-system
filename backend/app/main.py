@@ -12,15 +12,19 @@ app = FastAPI(
 )
 
 # 1. FIX CORS: No wildcards allowed when credentials=True
-origins = [
-    "http://localhost:5173",     # Vite local dev
-    "http://localhost:3000",     # Alternate local dev
-    "https://health-insurance-claims-system.vercel.app" # <-- UPDATE THIS with your actual Vercel URL
-]
+#origins = [
+   # "http://localhost:5173",     # Vite local dev
+  #  "http://localhost:3000",     # Alternate local dev
+   # "https://health-insurance-claims-system.vercel.app", # <-- UPDATE THIS with your actual Vercel URL
+#]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins, 
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_origin_regex=r"https://health-insurance-claims-system.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

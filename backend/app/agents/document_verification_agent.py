@@ -47,27 +47,44 @@ class DocumentVerificationAgent(BaseAgent):
                 return context
 
         # 2. Rule Check: Verify required documents against policy logic
-        # (Extracting from hydrated policy_terms.json requirements)
         doc_reqs = context.hydrated.policy.model_extra.get('document_requirements', {})
         category_reqs = doc_reqs.get(context.input.claim_category.value, {})
         required_types = set(category_reqs.get("required", []))
         
-        uploaded_types = {doc.detected_type.value for doc in context.input.documents if doc.detected_type}
+        uploaded_types = set()
+        unclassified_files = []
+
+        # Safely determine what we have, distinguishing classified from unclassified
+        for doc in context.input.documents:
+            if doc.detected_type:
+                uploaded_types.add(doc.detected_type.value)
+            else:
+                unclassified_files.append(doc.file_name)
         
         missing_docs = required_types - uploaded_types
         
         if missing_docs:
-            context.state.is_halted = True
-            context.state.halt_reason = "MISSING_REQUIRED_DOCUMENT"
-            
-            # Actionable message generation (TC001 Requirement)
-            uploaded_str = ", ".join(uploaded_types) or "None"
-            missing_str = ", ".join(missing_docs)
-            context.state.halt_message = (
-                f"You uploaded: {uploaded_str}. "
-                f"However, a {context.input.claim_category.value} claim requires: {missing_str}. "
-                f"Please upload the missing documents."
-            )
-            trace.status = AgentStatus.FAILED
+            if unclassified_files:
+                # STATE RECONCILIATION FIX:
+                # We are missing required classifications, BUT some documents failed classification 
+                # (likely due to a 503 error). We must gracefully degrade and continue the pipeline 
+                # instead of falsely rejecting the user.
+                trace.warnings.append(
+                    f"Could not verify {missing_docs} because {len(unclassified_files)} document(s) "
+                    f"({', '.join(unclassified_files)}) failed classification."
+                )
+            else:
+                # The user actually failed to upload the required files. Halt normally.
+                context.state.is_halted = True
+                context.state.halt_reason = "MISSING_REQUIRED_DOCUMENT"
+                
+                uploaded_str = ", ".join(uploaded_types) or "None"
+                missing_str = ", ".join(missing_docs)
+                context.state.halt_message = (
+                    f"You uploaded: {uploaded_str}. "
+                    f"However, a {context.input.claim_category.value} claim requires: {missing_str}. "
+                    f"Please upload the missing documents."
+                )
+                trace.status = AgentStatus.FAILED
             
         return context

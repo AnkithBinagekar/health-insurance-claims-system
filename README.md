@@ -82,41 +82,109 @@ This produces decisions that are:
 # System Architecture
 
 ```
-                           React Frontend (Vercel)
-                                      │
-                                      │ REST API
-                                      ▼
-                       FastAPI Backend (Azure Container Apps)
-                                      │
-                                      ▼
-                           Request Orchestrator
-                                      │
-     ┌─────────────────────────────────────────────────────┐
-     │                                                     │
-     ▼                                                     ▼
+                           flowchart TB
 
-DocumentClassifierAgent
-        │
-        ▼
-DocumentVerificationAgent
-        │
-        ▼
-OCRExtractionAgent
-        │
-        ▼
-CrossValidationAgent
-        │
-        ▼
-FraudDetectionAgent
-        │
-        ▼
-PolicyEvaluationAgent
-        │
-        ▼
-DecisionAgent
-        │
-        ▼
- Explainable Claim Decision
+%% =====================
+%% USER LAYER
+%% =====================
+
+subgraph USER["User Layer"]
+    U[👤 User]
+end
+
+%% =====================
+%% FRONTEND
+%% =====================
+
+subgraph FE["Frontend (Vercel)"]
+    UI["React + TypeScript<br/>Claim Submission UI<br/>Results Dashboard"]
+end
+
+%% =====================
+%% BACKEND
+%% =====================
+
+subgraph BE["Backend (Azure Container Apps)"]
+
+    API["FastAPI Backend<br/>Claim Orchestrator (API)"]
+
+    subgraph AGENTS["AI Agent Pipeline"]
+
+        A1["1. Document Classifier Agent"]
+        A2["2. Document Verification Agent"]
+        A3["3. OCR Extraction Agent"]
+        A4["4. Cross Validation Agent"]
+        A5["5. Fraud Detection Agent"]
+        A6["6. Policy Evaluation Agent"]
+        A7["7. Decision Agent"]
+
+        A1 --> A2
+        A2 --> A3
+        A3 --> A4
+        A4 --> A5
+        A5 --> A6
+        A6 --> A7
+
+    end
+
+    API --> A1
+
+end
+
+%% =====================
+%% DATA STORAGE
+%% =====================
+
+subgraph DATA["Data & Storage"]
+
+    D1["Uploaded Documents<br/>(Azure Storage)"]
+
+    D2["Policy Rules (JSON)<br/>policy_terms.json"]
+
+    D3["Execution Trace<br/>(Per Claim)"]
+
+    D4["Claim Store<br/>(SQLite)"]
+
+end
+
+%% =====================
+%% GEMINI
+%% =====================
+
+subgraph AI["External AI Service"]
+
+    G["Gemini Vision API<br/>Document Understanding & OCR"]
+
+end
+
+%% =====================
+%% OBSERVABILITY
+%% =====================
+
+subgraph OBS["Resilience & Observability"]
+
+    O1["Retry<br/>(Exponential Backoff)"]
+
+    O2["MD5 Response Cache"]
+
+    O3["Graceful Degradation"]
+
+    O4["Confidence Ledger"]
+
+    O5["Explainable Execution Trace"]
+
+end
+
+%% =====================
+%% CONNECTIONS
+%% =====================
+
+U --> UI
+UI --> API
+
+A7 --> DATA
+DATA --> G
+G --> OBS
 ```
 
 ---

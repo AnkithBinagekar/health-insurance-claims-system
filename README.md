@@ -81,8 +81,8 @@ This produces decisions that are:
 
 # System Architecture
 
-```
-                           flowchart TB
+```mermaid
+flowchart TB
 
 %% =====================
 %% USER LAYER
@@ -186,7 +186,38 @@ A7 --> DATA
 DATA --> G
 G --> OBS
 ```
+# Agent Execution Pipeline
 
+```mermaid
+flowchart TB
+
+S0["0️⃣ Upload Documents<br/>User uploads claim related documents"]
+
+A1["1️⃣ Document Classifier Agent<br/>Classifies document types<br/>(prescription, bill, report, etc.)"]
+
+A2["2️⃣ Document Verification Agent<br/>Validates presence of mandatory documents"]
+
+A3["3️⃣ OCR Extraction Agent<br/>Extracts structured data using Gemini Vision"]
+
+A4["4️⃣ Cross Validation Agent<br/>Validates consistency across extracted data"]
+
+A5["5️⃣ Fraud Detection Agent<br/>Detects anomalies, duplicates and fraud patterns"]
+
+A6["6️⃣ Policy Evaluation Agent<br/>Applies policy rules and calculates financials"]
+
+A7["7️⃣ Decision Agent<br/>Generates final decision, reason, confidence score and summary"]
+
+R["8️⃣ Results & Execution Trace<br/>Returns decision, financial breakdown and execution trace"]
+
+S0 --> A1
+A1 --> A2
+A2 --> A3
+A3 --> A4
+A4 --> A5
+A5 --> A6
+A6 --> A7
+A7 --> R
+```
 ---
 
 # Multi-Agent Workflow

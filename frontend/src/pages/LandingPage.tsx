@@ -17,7 +17,7 @@ export default function LandingPage() {
           <span className="text-xl font-bold tracking-tight text-plum-text">Plum AI Pod</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-plum-muted">
-          <a href="#architecture" className="hover:text-plum-primary transition-colors">Architecture</a>
+          <a href="https://github.com/AnkithBinagekar/health-insurance-claims-system/blob/main/ARCHITECTURE.md" className="hover:text-plum-primary transition-colors">Architecture</a>
           <a href="#observability" className="hover:text-plum-primary transition-colors">Observability</a>
           <a href="https://github.com/AnkithBinagekar/health-insurance-claims-system" target="_blank" rel="noreferrer" className="hover:text-plum-primary transition-colors">GitHub Repo</a>
         </div>
@@ -25,7 +25,7 @@ export default function LandingPage() {
           onClick={() => navigate('/dashboard')}
           className="text-sm font-bold text-plum-text hover:text-plum-primary transition-colors"
         >
-          Developer Login &rarr;
+          Launch Demo &rarr;
         </button>
       </nav>
 
@@ -44,18 +44,19 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-plum-blue opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-plum-blue"></span>
               </span>
-              System Version 1.0 Live
+              Built for Plum AI Engineer Assignment
             </div>
             
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-plum-text leading-[1.1] mb-6">
-              Intelligent Claims. <br/>
+              Health Insurance <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-plum-primary to-plum-purple">
-                Deterministic execution.
+              Claims Engine
+Built with AI
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-plum-muted mb-8 leading-relaxed">
-              A multi-agentic pipeline that separates probabilistic AI extraction from strict financial math. Guarantee compliance, speed, and fairness in health insurance operations.
+              Upload claim documents, validate policy eligibility, extract medical information using Gemini Vision, detect inconsistencies, and generate deterministic claim decisions through a multi-agent pipeline.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -63,7 +64,7 @@ export default function LandingPage() {
                 onClick={() => navigate('/dashboard')}
                 className="bg-plum-primary hover:bg-plum-hover text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-sm transition-all transform hover:-translate-y-0.5"
               >
-                Launch Operations Engine
+                Start Claim Analysis
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
@@ -87,6 +88,10 @@ export default function LandingPage() {
                   <Server className="w-4 h-4 text-plum-blue" />
                   <span><span className="text-plum-purple">await</span> DocumentClassifierAgent.run()</span>
                 </div>
+                 <div className="flex items-center gap-3 text-plum-muted">
+                  <Server className="w-4 h-4 text-plum-pink" />
+                  <span><span className="text-plum-purple">await</span> DocumentVerificationAgent.run()</span>
+                </div>
                 <div className="flex items-center gap-3 text-plum-muted">
                   <Server className="w-4 h-4 text-plum-pink" />
                   <span><span className="text-plum-purple">await</span> OCRExtractionAgent.run()</span>
@@ -96,10 +101,26 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-3 text-plum-muted">
                   <Server className="w-4 h-4 text-plum-orange" />
-                  <span><span className="text-plum-purple">await</span> DeterministicPolicyEngine.execute()</span>
+                  <span><span className="text-plum-purple">await</span> CrossValidationAgent.run()</span>
+                </div>
+                <div className="flex items-center gap-3 text-plum-muted">
+                  <Server className="w-4 h-4 text-plum-orange" />
+                  <span><span className="text-plum-purple">await</span> FraudDetectionAgent.run()</span>
+                </div>
+                <div className="flex items-center gap-3 text-plum-muted">
+                  <Server className="w-4 h-4 text-plum-orange" />
+                  <span><span className="text-plum-purple">await</span> PolicyEvaluationAgent.run()</span>
+                </div>
+                <div className="flex items-center gap-3 text-plum-muted">
+                  <Server className="w-4 h-4 text-plum-orange" />
+                  <span><span className="text-plum-purple">await</span> DecisionAgent.run()</span>
                 </div>
                 <div className="pl-7 text-plum-primary font-bold mt-4 pt-4 border-t border-gray-50">
-                  <span className="text-gray-400">Result:</span> APPROVED_AMOUNT = ₹45,000
+                  <span className="text-gray-400">Result:</span> APPROVED
+                </div>
+                <div className="pl-7 text-plum-primary font-bold mt-4 pt-4 border-t border-gray-50">
+                  <span className="text-gray-400">Confidence:</span> 96%
+                  
                 </div>
               </div>
             </div>
@@ -115,22 +136,28 @@ export default function LandingPage() {
             <div className="bg-plum-bg p-3 rounded-xl mb-4">
               <Bot className="w-6 h-6 text-plum-purple" />
             </div>
-            <h3 className="font-bold text-plum-text mb-2">Multi-Agent Architecture</h3>
-            <p className="text-sm text-plum-muted">Specialized AI agents handle distinct sub-tasks, preventing hallucinations and context-window degradation.</p>
+            <h3 className="font-bold text-plum-text mb-2">Multi-Agent Pipeline</h3>
+            <p className="text-sm text-plum-muted">Independent AI agents perform classification,
+verification, OCR, fraud detection and policy
+evaluation before deterministic adjudication.</p>
           </div>
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="bg-plum-bg p-3 rounded-xl mb-4">
               <ShieldCheck className="w-6 h-6 text-emerald-600" />
             </div>
-            <h3 className="font-bold text-plum-text mb-2">Deterministic Compliance</h3>
-            <p className="text-sm text-plum-muted">AI reads the data, but pure Python math calculates the payout. Zero risk of generative financial errors.</p>
+            <h3 className="font-bold text-plum-text mb-2">Deterministic Decision Engine</h3>
+            <p className="text-sm text-plum-muted">AI extracts information while Python policy
+rules calculate payouts using explainable,
+rule-based decisions.</p>
           </div>
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="bg-plum-bg p-3 rounded-xl mb-4">
               <Zap className="w-6 h-6 text-plum-orange" />
             </div>
             <h3 className="font-bold text-plum-text mb-2">Spatial Observability</h3>
-            <p className="text-sm text-plum-muted">Every extracted data point maps directly back to the source document with interactive bounding boxes.</p>
+            <p className="text-sm text-plum-muted">Every extracted field links back to its
+document location with confidence scores
+and execution traces.</p>
           </div>
         </div>
       </footer>

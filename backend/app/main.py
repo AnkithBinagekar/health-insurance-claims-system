@@ -15,7 +15,7 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",     # Vite local dev
     "http://localhost:3000",     # Alternate local dev
-    "https://.vercel.app" # <-- UPDATE THIS with your actual Vercel URL
+    "https://health-insurance-claims-system.vercel.app" # <-- UPDATE THIS with your actual Vercel URL
 ]
 
 app.add_middleware(

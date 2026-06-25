@@ -3,7 +3,7 @@ import uuid
 import os
 from datetime import datetime, timezone
 from typing import List, Dict
-from fastapi import UploadFile
+from fastapi import Path, UploadFile
 
 from backend.app.schemas.claim import (
     ClaimContext, ClaimInput, HydratedContext, 
@@ -24,7 +24,14 @@ class ClaimService:
         os.makedirs(self.upload_dir, exist_ok=True)
         
         # Load the assignment policy terms into memory
-        with open("policy_terms.json", "r") as f:
+        #with open("policy_terms.json", "r") as f:
+        from pathlib import Path
+
+        PROJECT_ROOT = Path(__file__).resolve().parents[3]
+        POLICY_PATH = PROJECT_ROOT / "policy_terms.json"
+
+        with open(POLICY_PATH, "r", encoding="utf-8") as f:
+            ...
             self.raw_policy_data = json.load(f)
 
     async def submit_claim(

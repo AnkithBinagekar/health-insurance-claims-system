@@ -10,7 +10,7 @@ from typing import Any
 from tenacity import retry, wait_exponential, stop_after_attempt # <-- ADD THIS
 
 # Initialize the global Gemini client
-ai_client = genai.Client(api_key=settings.gemini_api_key)
+ai_client = genai.Client(api_key="settings.gemini_api_key")
 
 CACHE_DIR = ".cache"
 os.makedirs(CACHE_DIR, exist_ok=True)

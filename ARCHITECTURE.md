@@ -1,4 +1,4 @@
-Here is the complete, final Markdown for your **`ARCHITECTURE.md`** file. You can copy everything inside this block, from the first `#` to the very end, and paste it directly into your project to replace the old version.
+
 
 ```markdown
 # Architecture & System Design

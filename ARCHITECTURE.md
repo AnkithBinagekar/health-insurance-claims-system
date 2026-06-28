@@ -1,6 +1,4 @@
 
-
-```markdown
 # Architecture & System Design
 
 ## Core Philosophy: The AI-Deterministic Split
